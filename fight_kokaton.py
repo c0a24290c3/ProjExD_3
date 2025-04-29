@@ -140,6 +140,30 @@ class Bomb:
         self.rct.move_ip(self.vx, self.vy)
         screen.blit(self.img, self.rct)
 
+class Score:
+    """
+    スコアに関するクラス
+    """
+    def __init__(self):
+        # フォント設定
+        self.fonto = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        # 文字色の設定
+        self.color = (0, 0, 255)
+        # スコアの初期値の設定
+        self.score = 0
+        # 文字列Surfaceの生成
+        self.img = self.fonto.render(f"スコア：{self.score}", 0, self.color)
+        # 文字列の座標の設定
+        self.rct = self.img.get_rect()
+        self.rct.bottomleft(100, HEIGHT-50)
+
+    def update(self, screen: pg.Surface):
+        """
+        現在のスコアを表示させる
+        引数 screen：画面Surface
+        """
+        screen.blit(self.img, self.rct)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
