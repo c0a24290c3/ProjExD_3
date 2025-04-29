@@ -146,12 +146,13 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("fig/pg_bg.jpg")
     bird = Bird((300, 200))
-    beam = None
-    bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10)for _ in range(NUM_OF_BOMBS)]
     # bombs = []
     # for i in range(NUM_OF_BOMBS):
     #     bombs.append(Bomb((255, 0, 0), 10))
+
+    beams = []  # 空のリスト生成
+
     clock = pg.time.Clock()
     tmr = 0
     while True:
@@ -160,12 +161,12 @@ def main():
                 return
             if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
                 # スペースキー押下でBeamクラスのインスタンス生成
-                beam = Beam(bird)            
+                beams.append(Beam(bird))   # リストに追加
         screen.blit(bg_img, [0, 0])
 
         # if bomb is not None:
-        for bomb in bombs:
-         if bird.rct.colliderect(bomb.rct):
+        for i,bomb in enumerate(bombs):
+         if bomb is not None and bird.rct.colliderect(bomb.rct):
              # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
              fonto = pg.font.Font(None, 80)
              bird.change_img(8, screen)
@@ -176,20 +177,31 @@ def main():
              return
         
             # if bomb is not None:
-        for j,bomb in enumerate(bombs):
+        for h,beam in enumerate(beams):
             if beam is not None:
-                if beam.rct.colliderect(bomb.rct):  # 爆弾とビームが衝突したら消す
-                    beam = None
-                    bombs[j] = None
-                    bird.change_img(6, screen)
-            bombs = [bomb for bomb in bombs if bomb is not None]
+                for j,bomb in enumerate(bombs):
+                    if bomb is not None and beam.rct.colliderect(bomb.rct) :  # 爆弾とビームが衝突したら消す
+                        beams[h] = None
+                        bombs[j] = None
+                        bird.change_img(6, screen)
+                        break
+
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        if beam is not None:
-                beam.update(screen)   
+
+        active_beam = []  # 生きてるビームのリスト
+        for beam in beams:
+            if beam is not None:
+                beam.update(screen)
+                yoko, tate = check_bound(beam.rct) # 画面外に出てるかチェック
+                if yoko and tate:
+                    active_beam.append(beam) 
+        beams = active_beam # 新しいリストに更新
+
         for bomb in bombs:
-            bomb.update(screen)
+            if bomb is not None:
+                 bomb.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
