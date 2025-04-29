@@ -155,14 +155,16 @@ class Score:
         self.img = self.fonto.render(f"スコア：{self.score}", 0, self.color)
         # 文字列の座標の設定
         self.rct = self.img.get_rect()
-        self.rct.bottomleft(100, HEIGHT-50)
+        self.rct.bottomleft = (100, HEIGHT - 50)
 
     def update(self, screen: pg.Surface):
         """
         現在のスコアを表示させる
         引数 screen：画面Surface
         """
+        self.img = self.fonto.render(f"スコア：{self.score}", 0, self.color)
         screen.blit(self.img, self.rct)
+        
 
 
 def main():
@@ -176,6 +178,8 @@ def main():
     #     bombs.append(Bomb((255, 0, 0), 10))
 
     beams = []  # 空のリスト生成
+
+    scr = Score() # スコアインスタンスの生成
 
     clock = pg.time.Clock()
     tmr = 0
@@ -208,6 +212,7 @@ def main():
                         beams[h] = None
                         bombs[j] = None
                         bird.change_img(6, screen)
+                        scr.score += 1  # 爆弾を撃ち落としたらスコアアップ
                         break
 
 
@@ -223,9 +228,13 @@ def main():
                     active_beam.append(beam) 
         beams = active_beam # 新しいリストに更新
 
+
         for bomb in bombs:
             if bomb is not None:
                  bomb.update(screen)
+        
+        scr.update(screen)  # スコアを描画
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
