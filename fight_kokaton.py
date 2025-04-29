@@ -216,6 +216,8 @@ def main():
                         break
 
 
+        scr.update(screen)  # スコアを描画
+
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
 
@@ -232,8 +234,7 @@ def main():
         for bomb in bombs:
             if bomb is not None:
                  bomb.update(screen)
-        
-        scr.update(screen)  # スコアを描画
+
 
         pg.display.update()
         tmr += 1
